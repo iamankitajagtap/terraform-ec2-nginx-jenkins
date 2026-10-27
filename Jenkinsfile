@@ -2,20 +2,10 @@
 pipeline {
     agent any
 
-    environment {
-        TF_IN_AUTOMATION = 'true'
-    }
-
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
-            }
-        }
-
-        stage('Check Terraform') {
-            steps {
-                sh 'terraform -version'
             }
         }
 
@@ -33,34 +23,8 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                sh 'terraform plan -input=false -out=tfplan'
+                sh 'terraform plan -input=false'
             }
-        }
-
-        stage('Terraform Apply') {
-            steps {
-                sh 'terraform apply -input=false -auto-approve tfplan'
-            }
-        }
-
-        stage('Show Outputs') {
-            steps {
-                sh 'terraform output'
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Terraform pipeline completed successfully!'
-        }
-
-        failure {
-            echo 'Pipeline failed. Check the Jenkins console output.'
-        }
-
-        always {
-            sh 'rm -f tfplan'
         }
     }
 }
